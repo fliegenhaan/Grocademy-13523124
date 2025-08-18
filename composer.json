@@ -55,6 +55,11 @@
         "test": [
             "@php artisan config:clear --ansi",
             "@php artisan test"
+        ],
+        "fresh": [
+            "@php -r \"if (file_exists('docker-compose.yml')) { passthru('sail down -v --remove-orphans'); }\"",
+            "@php -r \"if (file_exists('docker-compose.yml')) { passthru('sail up -d'); }\"",
+            "@php -r \"if (file_exists('docker-compose.yml')) { passthru('sail artisan migrate:fresh --seed'); }\""
         ]
     },
     "extra": {
