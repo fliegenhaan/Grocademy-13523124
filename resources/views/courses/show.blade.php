@@ -1,48 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ $course->title }} - Grocademy</title>
-</head>
-<body>
-    <div class="container">
-        <h1>{{ $course->title }}</h1>
-        <p>by {{ $course->instructor }}</p>
-        <hr>
+@extends('layouts.app')
 
-        <img src="{{ $course->thumbnail_image }}" alt="{{ $course->title }}" width="400">
+@section('title', $course->title . ' - Grocademy')
+
+@section('content')
+    <div class="course-detail-header">
+        <img src="{{ asset('storage/' . $course->thumbnail_image) }}" alt="{{ $course->title }}">
+        <div class="course-detail-content">
+            <h1>{{ $course->title }}</h1>
+            <p><strong>Oleh:</strong> {{ $course->instructor }}</p>
+            <h3>Deskripsi</h3>
+            <p>{{ $course->description }}</p>
+            
+            <h3>Topik yang Akan Dipelajari</h3>
+            <ul>
+                @foreach ($course->topics as $topic)
+                    <li>{{ $topic }}</li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+
+    <div class="auth-card" style="margin-top: 1.5rem;">
+        <h2 style="text-align:center; font-size: 1.5rem;">Harga: Rp{{ number_format($course->price, 0, ',', '.') }}</h2>
         
-        <h3>Deskripsi</h3>
-        <p>{{ $course->description }}</p>
-
-        <h3>Topik yang Akan Dipelajari</h3>
-        <ul>
-            @foreach ($course->topics as $topic)
-                <li>{{ $topic }}</li>
-            @endforeach
-        </ul>
-
         @if (session('success'))
-            <div style="color: green;">{{ session('success') }}</div>
+            <div class="alert alert-success">{{ session('success') }}</div>
         @endif
         @if (session('error'))
-            <div style="color: red;">{{ session('error') }}</div>
+            <div class="alert alert-danger">{{ session('error') }}</div>
         @endif
-
-        <h2>Harga: Rp{{ number_format($course->price, 0, ',', '.') }}</h2>
 
         @auth
             @if ($isPurchased)
-                <a href="{{ route('modules.index', $course) }}" style="background-color: green; color: white; padding: 10px; text-decoration: none;">Mulai Belajar</a>
+                <a href="{{ route('modules.index', $course) }}" class="btn btn-primary btn-block" style="background-color: var(--success-color);">Lanjutkan Belajar</a>
             @else
                 <form action="{{ route('courses.buy', $course) }}" method="POST">
                     @csrf
-                    <button type="submit" style="background-color: blue; color: white;">Beli Kursus Ini</button>
+                    <button type="submit" class="btn btn-primary btn-block">Beli Kursus Ini</button>
                 </form>
             @endif
         @else
-            <p><a href="{{ route('login') }}">Login untuk membeli kursus ini</a></p>
+            <p style="text-align:center;"><a href="{{ route('login') }}">Login untuk membeli kursus ini</a></p>
         @endauth
     </div>
-</body>
-</html>
+@endsection
