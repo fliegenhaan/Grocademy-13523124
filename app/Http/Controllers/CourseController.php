@@ -16,8 +16,8 @@ class CourseController extends Controller
         if ($request->has('search') && $request->input('search') != '') {
             $searchTerm = $request->input('search');
             $query->where(function ($q) use ($searchTerm) {
-                $q->where('title', 'ILIKE', '%' . $searchTerm . '%')
-                  ->orWhere('instructor', 'ILIKE', '%' . $searchTerm . '%');
+                $q->where('title', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('instructor', 'LIKE', '%' . $searchTerm . '%');
             });
         }
 
