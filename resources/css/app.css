@@ -369,7 +369,13 @@ p {
 .module-item-title a {
     font-weight: 500;
     font-size: 1.1rem;
+    color: #333;
 }
+
+.module-item-title a:hover {
+    text-decoration: underline;
+}
+
 .module-item-status {
     color: var(--success-color);
     font-weight: 600;

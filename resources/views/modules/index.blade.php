@@ -29,14 +29,19 @@
                     </a>
                 </div>
                 
-                @if (in_array($module->id, $completedModulesIds))
-                    <span class="module-item-status">✓ Selesai</span>
-                @else
-                    <form action="{{ route('modules.complete', ['module' => $module->id]) }}" method="POST">
-                        @csrf
-                        <button type="submit">Tandai Selesai</button>
-                    </form>
-                @endif
+                <div class="module-item-action">
+                    @if (in_array($module->id, $completedModulesIds))
+                        <form action="{{ route('modules.uncomplete', ['module' => $module->id]) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-warning">Batal Selesai</button>
+                        </form>
+                    @else
+                        <form action="{{ route('modules.complete', ['module' => $module->id]) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-success">Tandai Selesai</button>
+                        </form>
+                    @endif
+                </div>
             </li>
         @endforeach
     </ul>

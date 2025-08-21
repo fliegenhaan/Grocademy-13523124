@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/my-courses', [CourseController::class, 'myCourses'])->name('courses.my');
     Route::get('/courses/{course}/modules', [ModuleController::class, 'index'])->name('modules.index');
     Route::post('/modules/{module}/complete', [ModuleController::class, 'complete'])->name('modules.complete');
+    Route::post('/modules/{module}/uncomplete', [ModuleController::class, 'uncomplete'])->name('modules.uncomplete');
     Route::get('/modules/{module}', [ModuleController::class, 'show'])->name('modules.show');
     Route::get('/courses/{course}/certificate', [CertificateController::class, 'download'])->name('certificate.download');
 });

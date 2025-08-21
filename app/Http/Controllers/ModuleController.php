@@ -42,6 +42,17 @@ class ModuleController extends Controller
         return redirect()->route('modules.index', $module->course_id)->with('success', 'Modul berhasil ditandai selesai!');
     }
 
+    public function uncomplete(Module $module)
+    {
+        $user = Auth::user();
+    
+        if($user->completedModules()->where('module_id', $module->id)->exists()) {
+            $user->completedModules()->detach($module->id);
+        }
+
+        return redirect()->route('modules.index', $module->course_id)->with('success', 'Status modul berhasil dikembalikan!');
+    }
+
     public function show(Module $module)
     {
         $course = $module->course;
