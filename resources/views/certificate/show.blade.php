@@ -17,6 +17,9 @@
         <h2>{{ $user->first_name }} {{ $user->last_name }}</h2>
         <p>atas keberhasilannya menyelesaikan kursus:</p>
         <h3>{{ $course->title }}</h3>
+        @if($averageScore)
+            <p>dengan nilai rata-rata kuis <strong>{{ $averageScore }}</strong>.</p>
+        @endif
         <p>Instruktur: {{ $course->instructor }}</p>
         <br>
         <p>Diselesaikan pada: {{ $completionDate }}</p>
