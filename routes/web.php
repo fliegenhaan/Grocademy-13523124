@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ModuleController;
 use App\Http\Controllers\CertificateController;
+use App\Http\Controllers\QuizController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -31,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/modules/{module}/uncomplete', [ModuleController::class, 'uncomplete'])->name('modules.uncomplete');
     Route::get('/modules/{module}', [ModuleController::class, 'show'])->name('modules.show');
     Route::get('/courses/{course}/certificate', [CertificateController::class, 'download'])->name('certificate.download');
+    Route::get('/modules/{module}/quiz', [QuizController::class, 'show'])->name('quiz.show');
+    Route::post('/modules/{module}/quiz', [QuizController::class, 'submit'])->name('quiz.submit');
 });
 
 Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
