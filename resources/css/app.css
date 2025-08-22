@@ -565,3 +565,19 @@ p {
     white-space: nowrap;
     border-width: 0;
 }
+
+.answer-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+
+.answer-option label {
+    margin-bottom: 0;
+}
+
+.answer-option input[type="radio"] {
+    width: 1rem;
+    height: 1rem;
+}
