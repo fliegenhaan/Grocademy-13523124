@@ -11,22 +11,20 @@ use App\Models\Answer;
 
 class QuizSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
+        Quiz::query()->delete();
         $modules = Module::all();
 
         if ($modules->isEmpty()) {
-            $this->command->info('Tidak ada modul untuk ditambahkan kuis. Silakan jalankan CourseSeeder terlebih dahulu.');
+            $this->command->info('Tidak ada modul untuk ditambahkan kuis.');
             return;
         }
 
         $this->command->info('Membuat kuis untuk beberapa modul...');
 
         foreach ($modules as $module) {
-            if ($module->id % 2 == 0) {
+            if ($module->id % 2 != 0) {
                 $quiz = Quiz::create([
                     'module_id' => $module->id,
                     'title' => 'Kuis Pemahaman: ' . $module->title,
@@ -45,7 +43,6 @@ class QuizSeeder extends Seeder
                         'answer_text' => 'Ini adalah jawaban yang benar untuk pertanyaan ' . $i . '.',
                         'is_correct' => true,
                     ]);
-
                     for ($j = 1; $j <= 3; $j++) {
                         Answer::create([
                             'question_id' => $question->id,

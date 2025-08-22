@@ -15,6 +15,7 @@ class ModuleSeeder extends Seeder
     public function run(): void
     {
         Module::query()->delete();
+        \DB::table('module_user')->truncate();
 
         $courses = Course::all();
         $users = User::where('is_admin', false)->get();
