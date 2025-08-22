@@ -17,7 +17,7 @@ class ModuleController extends Controller
             return redirect()->route('course.show', $course)->with('error', 'Anda harus membeli kursus ini untuk mengakses modul.');
         }
 
-        $modules = $course->modules()->orderBy('order', 'asc')->get();
+        $modules = $course->modules()->with('quiz')->orderBy('order', 'asc')->get();
         $completedModulesIds = $user->completedModules()->whereIn('module_id', $modules->pluck('id'))->pluck('module_id')->toArray();
         $totalModules = $modules->count();
         $completedCount = count($completedModulesIds);

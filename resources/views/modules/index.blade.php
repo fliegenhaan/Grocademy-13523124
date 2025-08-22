@@ -36,10 +36,14 @@
                             <button type="submit" class="btn btn-warning">Batal Selesai</button>
                         </form>
                     @else
-                        <form action="{{ route('modules.complete', ['module' => $module->id]) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-success">Tandai Selesai</button>
-                        </form>
+                        @if ($module->quiz)
+                            <a href="{{ route('quiz.show', $module) }}" class="btn btn-primary">Kerjakan Kuis</a>
+                        @else
+                            <form action="{{ route('modules.complete', ['module' => $module->id]) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-success">Tandai Selesai</button>
+                            </form>
+                        @endif
                     @endif
                 </div>
             </li>
