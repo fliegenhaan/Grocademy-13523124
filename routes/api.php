@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CourseController;
 use App\Http\Controllers\Api\ModuleController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\QuizController;
 
 Route::post('/auth/login', [AuthController::class, 'login']);
 
@@ -21,6 +22,8 @@ Route::middleware('auth:api')->group(function () {
         Route::apiResource('courses.modules', ModuleController::class)->shallow();
         Route::post('/users/{user}/balance', [UserController::class, 'addBalance'])
               ->name('users.balance');
+        Route::post('/modules/{module}/quizzes', [QuizController::class, 'store']);
+        Route::post('/quizzes/{quiz}/questions', [QuizController::class, 'addQuestion']);
     });
 });
 
