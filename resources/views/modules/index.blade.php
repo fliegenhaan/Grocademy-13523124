@@ -22,30 +22,40 @@
     <h2 style="margin-top: 2rem;">Daftar Modul</h2>
     <ul class="module-list">
         @foreach ($modules as $module)
-            <li class="module-item {{ in_array($module->id, $completedModulesIds) ? 'completed' : '' }}">
-                <div class="module-item-title">
-                    <a href="{{ route('modules.show', ['module' => $module->id]) }}">
-                        <strong>Modul {{ $module->order }}:</strong> {{ $module->title }}
-                    </a>
-                </div>
-                
-                <div class="module-item-action">
-                    @if (in_array($module->id, $completedModulesIds))
-                        <form action="{{ route('modules.uncomplete', ['module' => $module->id]) }}" method="POST">
-                            @csrf
-                            <button type="submit" class="btn btn-warning">Batal Selesai</button>
-                        </form>
-                    @else
-                        @if ($module->quiz)
-                            <a href="{{ route('quiz.show', $module) }}" class="btn btn-primary">Kerjakan Kuis</a>
-                        @else
-                            <form action="{{ route('modules.complete', ['module' => $module->id]) }}" method="POST">
+            <li class="module-item {{ $module->is_locked ? 'locked' : (in_array($module->id, $completedModulesIds) ? 'completed' : '') }}">
+
+                @if ($module->is_locked)
+                    <div class="module-item-title locked-title">
+                        <span>🔒 <strong>Modul {{ $module->order }}:</strong> {{ $module->title }}</span>
+                    </div>
+                    <div class="module-item-action">
+                        <span class="module-item-status">Terkunci</span>
+                    </div>
+                @else
+                    <div class="module-item-title">
+                        <a href="{{ route('modules.show', ['module' => $module->id]) }}">
+                            <strong>Modul {{ $module->order }}:</strong> {{ $module->title }}
+                        </a>
+                    </div>
+
+                    <div class="module-item-action">
+                        @if (in_array($module->id, $completedModulesIds))
+                            <form action="{{ route('modules.uncomplete', ['module' => $module->id]) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn btn-success">Tandai Selesai</button>
+                                <button type="submit" class="btn btn-warning btn-sm">Batal Selesai</button>
                             </form>
+                        @else
+                            @if ($module->quiz)
+                                <a href="{{ route('quiz.show', $module) }}" class="btn btn-primary btn-sm">Kerjakan Kuis</a>
+                            @else
+                                <form action="{{ route('modules.complete', ['module' => $module->id]) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success btn-sm">Tandai Selesai</button>
+                                </form>
+                            @endif
                         @endif
-                    @endif
-                </div>
+                    </div>
+                @endif
             </li>
         @endforeach
     </ul>

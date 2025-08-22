@@ -581,3 +581,17 @@ p {
     width: 1rem;
     height: 1rem;
 }
+
+.module-item.locked {
+    background-color: #f8f9fa;
+    border-left: 5px solid #6c757d;
+    color: #6c757d;
+}
+.locked-title span {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+.btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+}
