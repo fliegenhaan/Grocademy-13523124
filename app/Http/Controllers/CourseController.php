@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\Services\CourseService;
 
 class CourseController extends Controller
 {
@@ -53,29 +53,16 @@ class CourseController extends Controller
         ]);
     }
 
-    public function buy(Course $course)
+    public function buy(Course $course,  CourseService $courseService)
     {
-        $user = Auth::user();
-        if ($user->courses()->where('course_id', $course->id)->exists()) {
-            return back()->with('error', 'Anda sudah memiliki couse ini.');
-        }
-
-        if ($user->balance < $course->price) {
-            return back()->with('error', 'Saldo Anda tidak mencukupi untuk membeli kursus ini.');
-        }
-
         try {
-            DB::transaction(function () use ($user, $course) {
-                $user->balance -= $course->price;
-                $user->save();
+            $courseService->buyCourse(Auth::user(), $course);
 
-                $user->courses()->attach($course->id);
-            });
-        } catch (\Throwable $th) {
-            dd($th);
+            return redirect()->route('courses.my')->with('success', 'Kursus berhasil dibeli!');
+
+        } catch (Exception $e) {
+            return redirect()->back()->with('error', $e->getMessage());
         }
-
-        return redirect()->route('courses.show', $course)->with('success', 'Selamat! Kursus berhasil dibeli.');
     }
 
     public function myCourses(Request $request)
