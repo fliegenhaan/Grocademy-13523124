@@ -60,8 +60,8 @@ class CourseController extends Controller
 
             return redirect()->route('courses.my')->with('success', 'Kursus berhasil dibeli!');
 
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
     }
 

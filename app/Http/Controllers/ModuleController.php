@@ -6,10 +6,15 @@ use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\Module;
 use App\Models\User;
+use App\Services\ModuleService;
 use Illuminate\Support\Facades\Auth;
 
 class ModuleController extends Controller
 {
+    public function __construct(private ModuleService $moduleService)
+    {
+    }
+
     public function index(Course $course)
     {
         $user = Auth::user();
@@ -18,60 +23,27 @@ class ModuleController extends Controller
             return redirect()->route('course.show', $course)->with('error', 'Anda harus membeli kursus ini untuk mengakses modul.');
         }
 
-        $modules = $course->modules()->with('quiz')->orderBy('order', 'asc')->get();
-        $completedModulesIds = $user->completedModules()->whereIn('module_id', $modules->pluck('id'))->pluck('module_id')->toArray();
-        $totalModules = $modules->count();
-        $completedCount = count($completedModulesIds);
-        $progressPercentage = ($totalModules > 0) ? ($completedCount / $totalModules) * 100 : 0;
-        $highestScores = $user->quizAttempts()
-        ->select('quiz_id', \DB::raw('MAX(score) as max_score'))
-        ->whereIn('quiz_id', $modules->pluck('quiz.id')->filter())
-        ->groupBy('quiz_id')
-        ->pluck('max_score', 'quiz_id');
-
-        $isPreviousModulePassed = true;
-        foreach ($modules as $module) {
-            $module->is_locked = !$isPreviousModulePassed;
-
-            if ($module->quiz) {
-                $score = $highestScores[$module->quiz->id] ?? 0;
-                $isPreviousModulePassed = $score >= $module->quiz->passing_score;
-            } else {
-                $isPreviousModulePassed = in_array($module->id, $completedModulesIds);
-            }
-        }
+        $data = $this->moduleService->getModuleIndexData($course, $user);
 
         return view('modules.index', [
             'course' => $course,
-            'modules' => $modules,
-            'completedModulesIds' => $completedModulesIds,
-            'progressPercentage' => $progressPercentage
+            'modules' => $data['modules'],
+            'completedModulesIds' => $data['completedModulesIds'],
+            'progressPercentage' => $data['progressPercentage']
         ]);
     }
 
     public function complete(Module $module)
     {
-        $user = Auth::user();
-
-        if(!$user->completedModules()->where('module_id', $module->id)->exists()) {
-            $user->completedModules()->attach($module->id);
-        }
+        $this->moduleService->completeModule($module, Auth::user());
 
         return redirect()->route('modules.index', $module->course_id)->with('success', 'Modul berhasil ditandai selesai!');
     }
 
     public function uncomplete(Module $module)
     {
-        $user = Auth::user();
-    
-        if($user->completedModules()->where('module_id', $module->id)->exists()) {
-            $user->completedModules()->detach($module->id);
-        }
-
-        if ($module->quiz) {
-            $user->quizAttempts()->where('quiz_id', $module->quiz->id)->delete();
-        }
-
+        $this->moduleService->uncompleteModule($module, Auth::user());
+        
         return redirect()->route('modules.index', $module->course_id)->with('success', 'Status modul berhasil dikembalikan!');
     }
 

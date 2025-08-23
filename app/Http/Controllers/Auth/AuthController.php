@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\AuthService;
 use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
+    public function __construct(private AuthService $authService)
+    {
+    }
+    
     public function showRegistrationForm()
     {
         return view('auth.register');
@@ -23,7 +25,7 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'username' => ['required', 'string', 'max:255', 'unique:users'],
@@ -31,34 +33,21 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()],
         ]);
 
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        Auth::login($user);
+        $this->authService->registerUser($validatedData);
 
         return redirect()->route('dashboard');
     }
 
     public function login(Request $request)
     {
-        $request->validate([
+        $credentials = $request->validate([
             'identifier' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $fieldType = filter_var($request->identifier, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-        $credentials = [
-            $fieldType => $request->identifier,
-            'password' => $request->password
-        ];
+        $loginSuccess = $this->authService->loginUser($credentials, $request);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        if ($loginSuccess) {
             return redirect()->intended('dashboard');
         }
 
@@ -69,11 +58,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
+        $this->authService->logoutUser($request);
         return redirect('/');
     }
 }
