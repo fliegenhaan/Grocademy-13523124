@@ -11,6 +11,23 @@ use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/auth/login",
+     *     tags={"Auth"},
+     *     summary="Login admin user",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"identifier","password"},
+     *             @OA\Property(property="identifier", type="string", example="admin@example.com"),
+     *             @OA\Property(property="password", type="string", example="secret123")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Login successful"),
+     *     @OA\Response(response=401, description="Unauthorized")
+     * )
+     */
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -45,6 +62,27 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/auth/register",
+     *     tags={"Auth"},
+     *     summary="Register new user (admin only)",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"first_name","last_name","username","email","password","confirm_password"},
+     *             @OA\Property(property="first_name", type="string", example="John"),
+     *             @OA\Property(property="last_name", type="string", example="Doe"),
+     *             @OA\Property(property="username", type="string", example="johndoe"),
+     *             @OA\Property(property="email", type="string", example="john@example.com"),
+     *             @OA\Property(property="password", type="string", example="secret123"),
+     *             @OA\Property(property="confirm_password", type="string", example="secret123")
+     *         )
+     *     ),
+     *     @OA\Response(response=201, description="User created successfully")
+     * )
+     */
     public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -76,6 +114,15 @@ class AuthController extends Controller
         ], 201);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/auth/self",
+     *     tags={"Auth"},
+     *     summary="Get current authenticated user",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(response=200, description="User data fetched successfully")
+     * )
+     */
     public function self(Request $request)
     {
         $user = $request->user();

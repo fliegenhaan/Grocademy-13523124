@@ -15,7 +15,21 @@ use Illuminate\Validation\Rule;
 class UserController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     * path="/api/users",
+     * tags={"Users"},
+     * summary="Get list of users",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="q", in="query", required=false, @OA\Schema(type="string"), description="Search query for name, username, or email"),
+     * @OA\Parameter(name="page", in="query", required=false, @OA\Schema(type="integer", default=1)),
+     * @OA\Parameter(name="limit", in="query", required=false, @OA\Schema(type="integer", default=10)),
+     * @OA\Response(response=200, description="Users retrieved successfully", @OA\JsonContent(
+     * @OA\Property(property="status", type="string", example="success"),
+     * @OA\Property(property="message", type="string", example="Users retrieved successfully."),
+     * @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/User")),
+     * @OA\Property(property="pagination", ref="#/components/schemas/Pagination")
+     * ))
+     * )
      */
     public function index(Request $request)
     {
@@ -49,7 +63,19 @@ class UserController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     * path="/api/users/{id}",
+     * tags={"Users"},
+     * summary="Get a specific user by ID",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=200, description="User retrieved successfully", @OA\JsonContent(
+     * @OA\Property(property="status", type="string", example="success"),
+     * @OA\Property(property="message", type="string", example="User retrieved successfully."),
+     * @OA\Property(property="data", ref="#/components/schemas/User")
+     * )),
+     * @OA\Response(response=404, description="Not Found")
+     * )
      */
     public function show(User $user)
     {
@@ -61,7 +87,31 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     * path="/api/users/{id}",
+     * tags={"Users"},
+     * summary="Update a user",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\JsonContent(
+     * @OA\Property(property="first_name", type="string"),
+     * @OA\Property(property="last_name", type="string"),
+     * @OA\Property(property="username", type="string"),
+     * @OA\Property(property="email", type="string", format="email"),
+     * @OA\Property(property="password", type="string", format="password", description="min: 8 characters")
+     * )
+     * ),
+     * @OA\Response(response=200, description="User updated successfully", @OA\JsonContent(
+     * @OA\Property(property="status", type="string", example="success"),
+     * @OA\Property(property="message", type="string", example="User updated successfully."),
+     * @OA\Property(property="data", ref="#/components/schemas/User")
+     * )),
+     * @OA\Response(response=403, description="Forbidden"),
+     * @OA\Response(response=404, description="Not Found"),
+     * @OA\Response(response=422, description="Validation error")
+     * )
      */
     public function update(Request $request, User $user)
     {
@@ -98,8 +148,17 @@ class UserController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
+   /**
+     * @OA\Delete(
+     * path="/api/users/{id}",
+     * tags={"Users"},
+     * summary="Delete a user",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=204, description="No Content"),
+     * @OA\Response(response=403, description="Forbidden"),
+     * @OA\Response(response=404, description="Not Found")
+     * )
      */
     public function destroy(User $user)
     {
@@ -111,6 +170,29 @@ class UserController extends Controller
         return response()->json(null, 204);
     }
 
+    /**
+     * @OA\Post(
+     * path="/api/users/{user}/balance",
+     * tags={"Users"},
+     * summary="Add balance to a user account",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="user", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\JsonContent(
+     * required={"increment"},
+     * @OA\Property(property="increment", type="number", format="float", example=50000)
+     * )
+     * ),
+     * @OA\Response(response=200, description="Balance added successfully", @OA\JsonContent(
+     * @OA\Property(property="status", type="string", example="success"),
+     * @OA\Property(property="message", type="string", example="Balance added successfully."),
+     * @OA\Property(property="data", ref="#/components/schemas/User")
+     * )),
+     * @OA\Response(response=404, description="User not found"),
+     * @OA\Response(response=422, description="Validation error")
+     * )
+     */
     public function addBalance(Request $request, User $user)
     {
         $validator = Validator::make($request->all(), [

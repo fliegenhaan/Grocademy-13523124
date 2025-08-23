@@ -13,7 +13,19 @@ use Illuminate\Support\Facades\DB;
 class ModuleController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     * path="/api/courses/{course}/modules",
+     * tags={"Modules"},
+     * summary="Get modules for a specific course",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="course", in="path", required=true, @OA\Schema(type="integer"), description="Course ID"),
+     * @OA\Response(response=200, description="Modules retrieved successfully", @OA\JsonContent(
+     * @OA\Property(property="status", type="string", example="success"),
+     * @OA\Property(property="message", type="string", example="Modules retrieved successfully."),
+     * @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/Module"))
+     * )),
+     * @OA\Response(response=404, description="Course not found")
+     * )
      */
     public function index(Course $course)
     {
@@ -26,7 +38,19 @@ class ModuleController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     * path="/api/modules/{module}",
+     * tags={"Modules"},
+     * summary="Get a specific module by ID",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="module", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=200, description="Module retrieved successfully", @OA\JsonContent(
+     * @OA\Property(property="status", type="string", example="success"),
+     * @OA\Property(property="message", type="string", example="Module retrieved successfully."),
+     * @OA\Property(property="data", ref="#/components/schemas/Module")
+     * )),
+     * @OA\Response(response=404, description="Not Found")
+     * )
      */
     public function show(Module $module)
     {
@@ -38,7 +62,32 @@ class ModuleController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     * path="/api/courses/{course}/modules",
+     * tags={"Modules"},
+     * summary="Create a new module for a course",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="course", in="path", required=true, @OA\Schema(type="integer"), description="Course ID"),
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\MediaType(
+     * mediaType="multipart/form-data",
+     * @OA\Schema(
+     * required={"title", "description"},
+     * @OA\Property(property="title", type="string", example="Introduction to Laravel"),
+     * @OA\Property(property="description", type="string", example="This is the first module."),
+     * @OA\Property(property="pdf_content", type="string", format="binary"),
+     * @OA\Property(property="video_content", type="string", format="binary")
+     * )
+     * )
+     * ),
+     * @OA\Response(response=201, description="Module created successfully", @OA\JsonContent(
+     * @OA\Property(property="status", type="string", example="success"),
+     * @OA\Property(property="message", type="string", example="Module created successfully."),
+     * @OA\Property(property="data", ref="#/components/schemas/Module")
+     * )),
+     * @OA\Response(response=422, description="Validation error")
+     * )
      */
     public function store(Request $request, Course $course)
     {
@@ -76,9 +125,35 @@ class ModuleController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * @OA\Put(
+     * path="/api/modules/{module}",
+     * tags={"Modules"},
+     * summary="Update a module",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="module", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\RequestBody(
+     * required=true,
+     * @OA\MediaType(
+     * mediaType="multipart/form-data",
+     * @OA\Schema(
+     * required={"title", "description"},
+     * @OA\Property(property="title", type="string"),
+     * @OA\Property(property="description", type="string"),
+     * @OA\Property(property="pdf_content", type="string", format="binary"),
+     * @OA\Property(property="video_content", type="string", format="binary")
+     * )
+     * )
+     * ),
+     * @OA\Response(response=200, description="Module updated successfully", @OA\JsonContent(
+     * @OA\Property(property="status", type="string", example="success"),
+     * @OA\Property(property="message", type="string", example="Module updated successfully."),
+     * @OA\Property(property="data", ref="#/components/schemas/Module")
+     * )),
+     * @OA\Response(response=422, description="Validation error"),
+     * @OA\Response(response=404, description="Not Found")
+     * )
      */
-    public function update(Request $request, Module $module)
+    public function update(Request $request, Module $module)  // praktiknya pake post buat ngedit module
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
@@ -119,7 +194,15 @@ class ModuleController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * @OA\Delete(
+     * path="/api/modules/{module}",
+     * tags={"Modules"},
+     * summary="Delete a module",
+     * security={{"bearerAuth":{}}},
+     * @OA\Parameter(name="module", in="path", required=true, @OA\Schema(type="integer")),
+     * @OA\Response(response=204, description="No Content"),
+     * @OA\Response(response=404, description="Not Found")
+     * )
      */
     public function destroy(Module $module)
     {
