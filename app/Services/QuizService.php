@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Module;
 use App\Models\QuizAttempt;
 use App\Models\User;
+use Illuminate\Support\Facades\Cache;
 
 class QuizService
 {
@@ -37,6 +38,9 @@ class QuizService
         if ($isPassed) {
             $user->completedModules()->syncWithoutDetaching([$module->id]);
         }
+
+        $cacheKey = "modules:user.{$user->id}.course.{$module->course_id}";
+        Cache::forget($cacheKey);
 
         return [
             'score' => $finalScore,
