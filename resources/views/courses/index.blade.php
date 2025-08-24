@@ -17,10 +17,6 @@
             <button type="submit" class="btn btn-primary">Cari</button>
         </form>
     </div>
-    
-    <div class="pagination">
-        {{ $courses->appends(request()->query())->links() }}
-    </div>
 
     <div class="course-grid">
         @forelse ($courses as $course)
@@ -48,7 +44,7 @@
         @endforelse
     </div>
     
-    <div class="pagination">
-        {{ $courses->links() }}
+    <div class="pagination" style="display: flex; justify-content: center; margin-top: 2rem;">
+        {{ $courses->appends(request()->query())->links() }}
     </div>
 @endsection

@@ -31,7 +31,7 @@
         @endforelse
     </div>
     
-    <div class="pagination">
+    <div class="pagination" style="display: flex; justify-content: center; margin-top: 2rem;">
         {{ $courses->appends(request()->query())->links() }}
     </div>
 @endsection
