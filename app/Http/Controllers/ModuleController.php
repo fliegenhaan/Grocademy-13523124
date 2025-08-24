@@ -20,7 +20,7 @@ class ModuleController extends Controller
         $user = Auth::user();
 
         if (!$user->courses()->where('course_id', $course->id)->exists()) {
-            return redirect()->route('course.show', $course)->with('error', 'Anda harus membeli kursus ini untuk mengakses modul.');
+            return redirect()->route('courses.show', $course)->with('error', 'Anda harus membeli kursus ini untuk mengakses modul.');
         }
 
         $data = $this->moduleService->getModuleIndexData($course, $user);
