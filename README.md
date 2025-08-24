@@ -176,26 +176,43 @@ Untuk video penjelasan lengkapnya ada di sini: https://youtu.be/9b2EpI8DmvM?si=h
 
 #### B04 - Caching
 Website ini dilengkapi dengan implementasi caching menggunakan Redis untuk mempercepat waktu muat halaman dan mengurangi beban database. Fokus utama caching berada pada halaman yang paling sering dimuat user yaitu daftar modul, di mana data progress pengguna yang kompleks (modul selesai, skor kuis, status modul) disimpan sementara. Saat data progres berubah (seperti setelah mengerjakan quiz atau menandai selesai sebuah modul), cache secara otomatis dihapus (cache invalidation) untuk memastikan data yang ditampilkan selalu data yang terbaru.
+![Log redis CLI](public/fotogrocademy/Screenshot 2025-08-24 234125.png)
 
 #### B05 - Lighthouse
 Website ini memiliki kualitas halaman yang sangat baik dibuktikan dengan audit dari tool Lighthouse (dari google).
 Skor rata-rata lighthouse yang didapat dari semua page di website:
-... + ... + ... = ...
+99+89+100+91+98+92+100+91+100+90+100+92+100+92+100+92+99+91+100+91+97+91+100+91+99+89+100+91+100+87+100+92=3,044 
+3,044:32 = 95.125
+![lighthouse](public/fotogrocademy/Screenshot (1619).png)
+![lighthouse](public/fotogrocademy/Screenshot (1620).png)
+![lighthouse](public/fotogrocademy/Screenshot (1622).png)
+![lighthouse](public/fotogrocademy/Screenshot (1623).png)
+![lighthouse](public/fotogrocademy/Screenshot (1625).png)
+![lighthouse](public/fotogrocademy/Screenshot (1628).png)
+![lighthouse](public/fotogrocademy/Screenshot (1629).png)
+![lighthouse](public/fotogrocademy/Screenshot (1632).png)
 #### B06 - Responsive Layout
 Website ini memiliki layout yang responsive baik di layar lebar (desktop), medium (tablet), maupun kecil (mobile).
+![desktop](public/fotogrocademy/Screenshot (1633).png)
+![tablet](public/fotogrocademy/Screenshot (1634).png)
+![mobile](public/fotogrocademy/Screenshot (1635).png)
 
 #### B07 - Dokumentasi API
 Website ini dilengkapi dengan dokumentasi untuk setiap API yang telah dibuat menggunakan Swagger. Dokumentasi ini bersifat interaktif dan menjelaskan setiap endpoint, metode HTTP yang digunakan (GET, POST, dll.), parameter yang diperlukan, format respons, serta contoh request dan response yang berhasil maupun gagal. Tersedia di [localhost/api/documentation](http://localhost/api/documentation)
 #### B08 - SOLID
-blablablabla
+S - Single Responsibility Principle: Prinsip ini diterapkan dengan memisahkan secara tegas tanggung jawab antara Controller dan Service. Sebagai contoh, AuthController hanya bertugas mengelola request dan response HTTP, sementara semua logika bisnis terkait otentikasi, seperti validasi data dan pembuatan pengguna, ditangani sepenuhnya oleh AuthService. Pemisahan ini membuat setiap kelas memiliki satu fokus utama, sehingga lebih mudah di-debug dan dipelihara (berlaku juga untuk controller dan services lainnya).
+O - Open/Closed Principle: Arsitektur website ini terbuka untuk penambahan fungsionalitas baru tanpa harus mengubah kode yang sudah ada. Contohnya adalah pada ModuleService yang menggunakan sistem caching Laravel. Jika di masa depan diperlukan penggantian driver cache dari Redis ke alternatif lain seperti Memcached, perubahan hanya perlu dilakukan pada level konfigurasi (.env), tanpa menyentuh satu baris pun kode di dalam service itu sendiri.
+L - Liskov Substitution Principle: Prinsip ini secara inheren didukung oleh penggunaan contracts (interface) pada Laravel. Meskipun tidak ada implementasi pewarisan kelas yang kompleks, ketergantungan pada abstraksi, bukan implementasi konkret, memastikan bahwa komponen-komponen dapat saling ditukar. Misalnya, jika sistem event dan listener digunakan, setiap listener yang mematuhi event contract yang sama dapat saling menggantikan tanpa mengganggu fungsionalitas sistem.
+I - Interface Segregation Principle: Eloquent Models: Semua model (User, Course, Module, dll.) adalah subclass dari Illuminate\Database\Eloquent\Model. Seperti di dalam CourseService, memanggil metode-metode seperti find(), create(), all(), atau save() pada model-model ini. Kita dapat mengganti objek Course dengan objek Module di dalam logika yang serupa (misalnya, jika ada repository generik), dan program tidak akan rusak karena keduanya adalah turunan dari superclass Model dan memiliki "kontrak" metode yang sama.
+D - Dependency Inversion Principle: Ketergantungan antar komponen dibalik melalui penggunaan Dependency Injection (DI) yang difasilitasi oleh Service Container Laravel. Controller tingkat tinggi, seperti CertificateController, tidak membuat instance dari CertificateService secara langsung, melainkan menerimanya sebagai dependency melalui constructor. Dengan demikian, controller bergantung pada abstraksi, bukan pada implementasi konkret, yang membuat kode lebih fleksibel dan sangat mudah untuk diuji (testable) karena dependencies-nya bisa di-mock.
 #### B09 - Automated Testing
 Saya juga membuat unit test untuk memvalidasi logika di dalam setiap kelas Service (Backend) menggunakan PHPUnit. Tes ini mencakup berbagai skenario: "happy path" (ketika semua berjalan lancar), kasus kegagalan (seperti saldo tidak cukup atau kuis gagal), dan kasus-kasus khusus lainnya. Dengan menjalankan tes ini, saya dapat memastikan setiap perubahan baru tidak merusak fungsionalitas yang sudah ada. Semua file unit test tersedia di dalam folder tests.
 #### B10 - Fitur Tambahan (Quiz)
 Website ini juga dilengkapi dengan sistem kuis yang terintegrasi dengan modul. Fitur ini memungkinkan pengguna untuk menguji pemahaman mereka setelah mempelajari sebuah modul. Sistem secara otomatis menghitung skor, menentukan kelulusan berdasarkan passing_score, dan menggunakan hasil kuis tersebut untuk mengontrol alur pembelajaran, di mana pengguna harus lulus kuis di modul saat ini sebelum bisa mengakses modul berikutnya.
-
+![kuis](public/fotogrocademy/Screenshot (1625).png)
 ---
 
 ### Screenshot Aplikasi
-
+Terdapat pada folder public/fotogrocademy
 
 ---
